@@ -1,0 +1,43 @@
+body { margin:0; }
+.feed { height:100vh; overflow:hidden; }
+.card { height:100vh; position:relative; }
+video { width:100%; height:100%; object-fit:cover; }
+
+.rightBar { position:absolute; right:10px; bottom:100px; display:flex; flex-direction:column; gap:10px; }
+.bottom { position:absolute; bottom:60px; left:10px; color:white; }
+.mute { position:absolute; top:10px; right:10px; }
+
+.bigHeart { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:80px; }
+
+.progress { position:absolute; bottom:0; width:100%; height:3px; background:#444; }
+.progress div { height:100%; background:red; }
+
+.disc {
+  position:absolute;
+  bottom:120px;
+  right:10px;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:url('https://i.pravatar.cc/100');
+  animation:spin 3s linear infinite;
+}
+
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+.skeleton {
+  position:absolute;
+  width:100%; height:100%;
+  background:linear-gradient(90deg,#111,#333,#111);
+  animation:shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0%{opacity:0.3}
+  50%{opacity:0.6}
+  100%{opacity:0.3}
+}
+
+.dark { background:black; color:white; }
+.light { background:white; color:black; }
+.themeToggle { position:fixed; top:10px; left:10px; z-index:1000; }
