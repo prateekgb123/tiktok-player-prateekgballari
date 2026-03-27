@@ -1,70 +1,201 @@
-# Getting Started with Create React App
+# 🎬 TikTok-Style Vertical Video Player
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern **TikTok-style vertical video player** built using React.
+This project replicates the core short-form video experience with smooth scrolling, auto-play, interactive overlays, and responsive UI.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Live Demo
 
-### `npm start`
+👉 *(Add your deployed link here if available)*
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🎥 Video Demo
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+👉 *(Paste your Loom / YouTube / Drive link here)*
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+## 📸 Preview
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+![pc view 1](./assets/ss1.png)
+![pc view 2](./assets/ss2.png)
+![mobile view 1](./assets/ss3.png)
+![mobile view 2](./assets/ss4.png)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## ✨ Features
 
-### `npm run eject`
+### 🎯 Core Features
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* 📱 Full-screen vertical video feed (one video per viewport)
+* 🔄 Infinite looping scroll (last → first seamlessly)
+* ⬆️⬇️ Keyboard navigation (Arrow Up / Down)
+* ▶️ Auto-play active video & auto-pause others
+* ⏯ Tap to play/pause with overlay feedback
+* 📊 Video progress bar
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### ❤️ Interactive UI
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+* 👍 Like button (with animation + count)
+* 💬 Comment system (bottom sheet modal + add comments)
+* 🔗 Share (Web Share API + copy fallback)
+* 🔖 Save/Bookmark (toggle + filled icon)
+* 👤 Follow button (Follow / Following toggle)
+* 🔊 Mute / Unmute toggle
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 🔥 Advanced Features
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+* ❤️ Double-tap to like (center heart animation)
+* ⏸ Long-press to pause
+* ⏳ Loading skeleton while video loads
+* 🎵 Spinning music disc animation
+* 🌙 Light / Dark mode (UI-only theme switch)
+* 📱 Fully responsive (mobile + desktop)
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🛠 Tech Stack
 
-### Analyzing the Bundle Size
+| Technology      | Usage                  |
+| --------------- | ---------------------- |
+| React (Hooks)   | UI & state management  |
+| Vite            | Fast development setup |
+| HTML5 `<video>` | Native video playback  |
+| Lucide React    | Icons                  |
+| CSS (custom)    | Styling & animations   |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 🧠 Technical Decisions & Rationale
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+* ✅ **React Hooks** used for simplicity and modern patterns (no class components)
+* ✅ **useRef** for direct video control (play/pause)
+* ✅ **Intersection Observer** for detecting active video efficiently
+* ✅ **No external video libraries** → better performance and control
+* ✅ **Scroll snapping** ensures smooth TikTok-like experience
+* ✅ **Component-based architecture** for scalability
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 📂 Folder Structure
 
-### Deployment
+```
+frontend/
+│
+├── public/
+│   └── videos/
+│
+├── src/
+│   ├── assets/
+│   │   └── Videos.js
+│   │
+│   ├── components/
+│   │   ├── VideoFeed.jsx
+│   │   ├── VideoCard.jsx
+│   │   ├── ActionBar.jsx
+│   │   ├── Overlay.jsx
+│   │   └── ProgressBar.jsx
+│   │
+│   ├── App.jsx
+│   ├── index.css
+│   └── main.jsx
+│
+├── package.json
+└── README.md
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
+## ⚙️ Setup Instructions
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/prateekgb123/tiktok-player-prateekgballari.git
+cd tiktok-player-prateekgballari
+```
+
+### 2️⃣ Install dependencies
+
+```bash
+npm install
+```
+
+### 3️⃣ Run the app
+
+```bash
+npm run dev
+```
+
+👉 Open: `http://localhost:5173`
+
+---
+
+## 🎮 Controls
+
+| Action       | Behavior       |
+| ------------ | -------------- |
+| Click video  | Play / Pause   |
+| Double click | Like ❤️        |
+| Long press   | Pause          |
+| Arrow Down   | Next video     |
+| Arrow Up     | Previous video |
+| Spacebar     | Play / Pause   |
+
+---
+
+## ⚡ Performance Optimizations
+
+* Only **active video plays**
+* Others are automatically paused
+* Efficient re-renders using state isolation
+* Smooth scroll via CSS snap + controlled navigation
+
+---
+
+## ⚠️ Limitations / Trade-offs
+
+* No backend (likes/comments are local state only)
+* No persistent storage (refresh resets data)
+* Web Share API works best on mobile browsers
+* Video assets are static (not dynamically fetched)
+
+---
+
+## 🔮 Future Improvements
+
+* 🔐 User authentication
+* ☁️ Backend integration (store likes/comments)
+* 📊 Analytics (watch time tracking)
+* 🎥 Upload feature
+* 💾 Save videos to user profile
+* 📡 Real-time comments
+
+---
+
+## 📌 Submission Checklist
+
+* ✅ Public GitHub repository
+* ✅ Clean commit history
+* ✅ Working app (`npm install && npm run dev`)
+* ✅ README with setup + features
+* ✅ Video demo link included
+
+---
+
+## 👨‍💻 Author
+
+**Your Name**
+GitHub: https://github.com/prateekgb123
+
+---
+
+## ⭐ If you like this project
+
+Give it a ⭐ on GitHub!
