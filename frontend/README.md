@@ -7,7 +7,7 @@ This project replicates the core short-form video experience with smooth scrolli
 
 ## 🚀 Live Demo
 
-👉 *(Add your deployed link here if available)*
+👉 https://tiktok-player-prateekgballari.onrender.com
 
 ## 🎥 Video Demo
 
