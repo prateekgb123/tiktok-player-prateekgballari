@@ -19,7 +19,13 @@ export default function VideoCard({ video, active }) {
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [follow, setFollow] = useState(false);
-
+  const [saved, setSaved] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+const [commentText, setCommentText] = useState("");
+const [comments, setComments] = useState([
+  "Nice video 🔥",
+  "Amazing content 😍"
+]);
   // ✅ Auto play / pause
   useEffect(() => {
     if (!ref.current) return;
@@ -85,6 +91,45 @@ export default function VideoCard({ video, active }) {
   onTouchStart={() => ref.current?.pause()}
 onTouchEnd={() => ref.current?.play()}
 >
+
+  {showComments && (
+  <div className="commentModal" onClick={() => setShowComments(false)}>
+    <div className="commentBox" onClick={(e) => e.stopPropagation()}>
+      
+      <h3>Comments</h3>
+
+      <div className="commentList">
+  {comments.map((c, i) => (
+    <div key={i} className="commentItem">
+      <img src={`https://i.pravatar.cc/40?img=${i}`} />
+      <div className="commentContent">
+        <div className="commentUser">@user{i}</div>
+        <div>{c}</div>
+      </div>
+    </div>
+  ))}
+</div>
+
+      <div className="commentInput">
+        <input
+          value={commentText}
+          onChange={(e) => setCommentText(e.target.value)}
+          placeholder="Add comment..."
+        />
+        <button
+          onClick={() => {
+            if (!commentText.trim()) return;
+            setComments([...comments, commentText]);
+            setCommentText("");
+          }}
+        >
+          Post
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
   
       {/* VIDEO */}
      <video
@@ -115,25 +160,58 @@ onTouchEnd={() => ref.current?.play()}
 
         <button className="iconBtn" onClick={handleLike}>
           <Heart
-            size={28}
-            fill={liked ? "red" : "none"}
-            color={liked ? "red" : "white"}
-          />
+  size={28}
+  color={liked ? "red" : "currentColor"}   // 🔥 stroke color
+  fill={liked ? "red" : "none"}           // 🔥 fill inside
+/>
           <span>{likes}</span>
         </button>
 
-        <button className="iconBtn">
-          <MessageCircle size={28} />
-          <span>{video.comments}</span>
-        </button>
+        <button
+  className="iconBtn"
+  onClick={(e) => {
+    e.stopPropagation();
+    setShowComments(true);
+  }}
+>
+  <MessageCircle size={28} />
+  <span>{comments.length}</span>
+</button>
 
-        <button className="iconBtn">
-          <Share2 size={28} />
-        </button>
+        <button
+  className="iconBtn"
+  onClick={async (e) => {
+    e.stopPropagation();
 
-        <button className="iconBtn">
-          <Bookmark size={28} />
-        </button>
+    if (navigator.share) {
+      await navigator.share({
+        title: "Check this video",
+        text: video.description,
+        url: video.url
+      });
+    } else {
+      navigator.clipboard.writeText(video.url);
+      alert("Link copied!");
+    }
+  }}
+>
+  <Share2 size={28} />
+</button>
+
+        <button
+  className="iconBtn"
+  onClick={(e) => {
+    e.stopPropagation();
+    setSaved(!saved);
+  }}
+>
+  <Bookmark
+    size={28}
+    color={saved ? "#ffd700" : "currentColor"} // gold color
+    fill={saved ? "#ffd700" : "none"}
+  />
+  <span>{saved ? "Saved" : "Save"}</span>
+</button>
       </div>
 
       {/* BOTTOM INFO */}

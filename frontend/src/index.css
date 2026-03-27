@@ -8,16 +8,14 @@ body {
 .app {
   height: 100vh;
   width: 100%;
-  transition: background 0.3s ease, color 0.3s ease;
 }
 
+/* THEMES (ONLY TEXT/UI CHANGE) */
 .dark {
-  background: black;
   color: white;
 }
 
 .light {
-  background: white;
   color: black;
 }
 
@@ -49,34 +47,18 @@ video {
   object-position: center;
 }
 
-/* ================= OVERLAY ================= */
-
-/* DARK GRADIENT (TEXT VISIBILITY FIX) */
+/* ================= SUBTLE OVERLAY (ALWAYS SAME) ================= */
 .card::after {
   content: "";
   position: absolute;
   bottom: 0;
   width: 100%;
-  height: 55%;
+  height: 40%;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.95),
     rgba(0, 0, 0, 0.7),
     rgba(0, 0, 0, 0.3),
     transparent
-  );
-  pointer-events: none;
-}
-
-/* CINEMATIC VIGNETTE */
-.card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle,
-    transparent 60%,
-    rgba(0,0,0,0.5)
   );
   pointer-events: none;
 }
@@ -93,7 +75,6 @@ video {
   z-index: 3;
 }
 
-/* AVATAR */
 .rightBar img {
   width: 50px;
   height: 50px;
@@ -110,15 +91,159 @@ video {
   border-radius: 20px;
   font-size: 12px;
   cursor: pointer;
-  box-shadow: 0 0 12px rgba(255, 0, 80, 0.7);
+  transition: 0.2s;
 }
 
-/* ICON BUTTON */
+.followBtn:hover {
+  transform: scale(1.05);
+}
+
+/* ================= COMMENT MODAL ================= */
+.commentModal {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: flex-end;
+  z-index: 20;
+  backdrop-filter: blur(4px);
+}
+
+/* ================= COMMENT BOX ================= */
+.commentBox {
+  width: 100%;
+  height: 55%;
+  border-radius: 20px 20px 0 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease;
+}
+
+/* DARK MODE */
+/* DARK MODE */
+.dark .commentBox {
+  background: #000000;   /* 🔥 pure black */
+  color: white;
+}
+
+/* LIGHT MODE */
+.light .commentBox {
+  background: #ffffff;   /* 🔥 white */
+  color: #111;
+}
+
+/* SLIDE ANIMATION */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ================= HEADER ================= */
+.commentBox h3 {
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* ================= COMMENT LIST ================= */
+.commentList {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* EACH COMMENT */
+.commentItem {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  align-items: flex-start;
+}
+
+/* AVATAR */
+.commentItem img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+/* TEXT */
+.commentContent {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* USERNAME */
+.commentUser {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* ================= INPUT ================= */
+.commentInput {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* LIGHT MODE BORDER */
+.light .commentInput {
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+/* INPUT FIELD */
+.commentInput input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 25px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+/* DARK INPUT */
+/* DARK */
+.dark .commentInput input {
+  background: #1a1a1a;
+  color: white;
+}
+
+/* LIGHT */
+.light .commentInput input {
+  background: #f2f2f2;
+  color: black;
+}
+
+/* POST BUTTON */
+.commentInput button {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: none;
+  background: linear-gradient(45deg, #ff0050, #ff7a00);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.commentInput button:hover {
+  transform: scale(1.05);
+}
+/* ================= ICON BUTTON ================= */
 .iconBtn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: white;
+  color: white; /* 🔥 important */
   background: transparent;
   border: none;
   cursor: pointer;
@@ -132,23 +257,26 @@ video {
 
 /* ICON SHADOW */
 .iconBtn svg {
-  filter: drop-shadow(0px 2px 6px rgba(0,0,0,0.9));
+  transition: all 0.2s ease;
+}
+
+.iconBtn:active svg {
+  transform: scale(1.3);
 }
 
 .iconBtn span {
   font-size: 12px;
 }
 
-/* ================= BOTTOM TEXT ================= */
+/* ================= TEXT ================= */
 .bottom {
   position: absolute;
   bottom: 80px;
   left: 14px;
   max-width: 70%;
   z-index: 3;
-  color: white;
 
-  /* 🔥 TEXT VISIBILITY FIX */
+  /* readable on any video */
   text-shadow: 0px 2px 8px rgba(0,0,0,0.9);
 }
 
@@ -177,14 +305,33 @@ video {
   animation: pop 0.6s ease forwards;
 }
 
-
 @keyframes pop {
   0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
   50% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; }
   100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
 }
 
-/* ================= SOUND BUTTON ================= */
+/* ================= LOADER ================= */
+.loader {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    #111 25%,
+    #222 50%,
+    #111 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  z-index: 5;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ================= MUTE BUTTON ================= */
 .muteBtn {
   position: absolute;
   top: 16px;
@@ -192,16 +339,26 @@ video {
   border: none;
   border-radius: 50%;
   padding: 8px;
-  color: white;
   backdrop-filter: blur(10px);
-  background: rgba(0,0,0,0.5);
   z-index: 3;
 }
 
-/* ================= DISC (FIXED POSITION) ================= */
+/* DARK */
+.dark .muteBtn {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* LIGHT */
+.light .muteBtn {
+  background: rgba(255,255,255,0.7);
+  color: black;
+}
+
+/* ================= DISC ================= */
 .disc {
   position: absolute;
-  bottom: 40px;   /* 🔥 MOVED DOWN */
+  bottom: 40px;
   right: 12px;
   width: 50px;
   height: 50px;
@@ -210,10 +367,9 @@ video {
   background-size: cover;
   border: 2px solid white;
   animation: spin 3s linear infinite;
-  z-index: 2; /* 🔥 BELOW BUTTONS */
+  z-index: 2;
 }
 
-/* ROTATION */
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -225,7 +381,16 @@ video {
   bottom: 0;
   width: 100%;
   height: 3px;
+}
+
+/* DARK */
+.dark .progress {
   background: rgba(255,255,255,0.2);
+}
+
+/* LIGHT */
+.light .progress {
+  background: rgba(0,0,0,0.2);
 }
 
 .progress div {
@@ -240,24 +405,153 @@ video {
   left: 15px;
   z-index: 1000;
   border: none;
-  padding: 8px;
+  padding: 10px;
   border-radius: 50%;
-  color: white;
   backdrop-filter: blur(10px);
-  background: rgba(0,0,0,0.5);
+  cursor: pointer;
 }
+
+/* DARK */
+.dark .themeToggle {
+  background: rgba(0,0,0,0.5);
+  color: white;
+}
+
+/* LIGHT */
+.light .themeToggle {
+  background: rgba(255,255,255,0.7);
+  color: black;
+}
+
+/* ================= RESPONSIVE (MOBILE) ================= */
 @media (max-width: 768px) {
+
+  /* ===== GLOBAL ===== */
+  body {
+    overflow: hidden;
+  }
+
+  /* ===== RIGHT ACTION BAR ===== */
   .rightBar {
-    right: 8px;
-    gap: 14px;
+    right: 6px;
+    bottom: 110px;
+    gap: 12px;
   }
 
+  .rightBar img {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* ICON BUTTONS */
   .iconBtn svg {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
   }
 
+  .iconBtn span {
+    font-size: 10px;
+  }
+
+  /* FOLLOW BUTTON */
+  .followBtn {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  /* ===== BOTTOM TEXT ===== */
   .bottom {
+    bottom: 65px;
+    left: 10px;
+    max-width: 85%;
+  }
+
+  .bottom p {
+    font-size: 12px;
+  }
+
+  .bottom p:first-child {
+    font-size: 14px;
+  }
+
+  /* ===== COMMENT MODAL ===== */
+  .commentModal {
+    align-items: flex-end;
+  }
+
+  .commentBox {
+    height: 70%;                 /* bigger on mobile */
+    padding: 12px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .commentBox h3 {
+    font-size: 14px;
+  }
+
+  /* COMMENT LIST */
+  .commentList {
+    padding-right: 2px;
+    padding-bottom: 10px;
+  }
+
+  .commentItem {
+    gap: 8px;
+  }
+
+  .commentItem img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .commentContent {
     font-size: 13px;
+  }
+
+  .commentUser {
+    font-size: 12px;
+  }
+
+  /* INPUT SECTION (VERY IMPORTANT FIX) */
+  .commentInput {
+    position: sticky;
+    bottom: 0;
+    padding: 8px;
+    gap: 6px;
+    background: inherit; /* keeps dark/light */
+  }
+
+  .commentInput input {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .commentInput button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  /* ===== MUTE BUTTON ===== */
+  .muteBtn {
+    top: 10px;
+    right: 10px;
+    padding: 6px;
+  }
+
+  /* ===== DISC ===== */
+  .disc {
+    width: 40px;
+    height: 40px;
+    bottom: 25px;
+  }
+
+  /* ===== HEART ANIMATION ===== */
+  .heartAnim {
+    font-size: 70px;
+  }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress {
+    height: 2px;
   }
 }
