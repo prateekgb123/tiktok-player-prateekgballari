@@ -49,14 +49,4 @@ export const videos = [
     shares: 20,
     music: "Track 5",
   },
-  {
-    id: 6,
-    url: "/videos/video6.mp4",
-    user: { name: "user6", avatar: "https://i.pravatar.cc/100?img=6" },
-    description: "Video 6 demo",
-    likes: 650,
-    comments: 55,
-    shares: 30,
-    music: "Track 6",
-  },
 ];

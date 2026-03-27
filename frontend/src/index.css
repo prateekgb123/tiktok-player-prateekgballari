@@ -1,43 +1,263 @@
-body { margin:0; }
-.feed { height:100vh; overflow:hidden; }
-.card { height:100vh; position:relative; }
-video { width:100%; height:100%; object-fit:cover; }
+/* ================= GLOBAL ================= */
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  overflow: hidden;
+}
 
-.rightBar { position:absolute; right:10px; bottom:100px; display:flex; flex-direction:column; gap:10px; }
-.bottom { position:absolute; bottom:60px; left:10px; color:white; }
-.mute { position:absolute; top:10px; right:10px; }
+.app {
+  height: 100vh;
+  width: 100%;
+  transition: background 0.3s ease, color 0.3s ease;
+}
 
-.bigHeart { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:80px; }
+.dark {
+  background: black;
+  color: white;
+}
 
-.progress { position:absolute; bottom:0; width:100%; height:3px; background:#444; }
-.progress div { height:100%; background:red; }
+.light {
+  background: white;
+  color: black;
+}
 
+/* ================= FEED ================= */
+.feed {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+}
+
+.wrapper {
+  height: 100vh;
+  scroll-snap-align: start;
+}
+
+/* ================= CARD ================= */
+.card {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* VIDEO */
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ================= OVERLAY ================= */
+
+/* DARK GRADIENT (TEXT VISIBILITY FIX) */
+.card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 55%;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.95),
+    rgba(0, 0, 0, 0.7),
+    rgba(0, 0, 0, 0.3),
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* CINEMATIC VIGNETTE */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle,
+    transparent 60%,
+    rgba(0,0,0,0.5)
+  );
+  pointer-events: none;
+}
+
+/* ================= RIGHT BAR ================= */
+.rightBar {
+  position: absolute;
+  right: 14px;
+  bottom: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  z-index: 3;
+}
+
+/* AVATAR */
+.rightBar img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+/* FOLLOW BUTTON */
+.followBtn {
+  background: #ff004f;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(255, 0, 80, 0.7);
+}
+
+/* ICON BUTTON */
+.iconBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.iconBtn:hover {
+  transform: scale(1.2);
+}
+
+/* ICON SHADOW */
+.iconBtn svg {
+  filter: drop-shadow(0px 2px 6px rgba(0,0,0,0.9));
+}
+
+.iconBtn span {
+  font-size: 12px;
+}
+
+/* ================= BOTTOM TEXT ================= */
+.bottom {
+  position: absolute;
+  bottom: 80px;
+  left: 14px;
+  max-width: 70%;
+  z-index: 3;
+  color: white;
+
+  /* 🔥 TEXT VISIBILITY FIX */
+  text-shadow: 0px 2px 8px rgba(0,0,0,0.9);
+}
+
+.bottom p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.bottom p:first-child {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.bottom span {
+  color: #ccc;
+  cursor: pointer;
+}
+
+/* ================= HEART ================= */
+.heartAnim {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 90px;
+  animation: pop 0.6s ease forwards;
+}
+
+
+@keyframes pop {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+
+/* ================= SOUND BUTTON ================= */
+.muteBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: none;
+  border-radius: 50%;
+  padding: 8px;
+  color: white;
+  backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.5);
+  z-index: 3;
+}
+
+/* ================= DISC (FIXED POSITION) ================= */
 .disc {
-  position:absolute;
-  bottom:120px;
-  right:10px;
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:url('https://i.pravatar.cc/100');
-  animation:spin 3s linear infinite;
+  position: absolute;
+  bottom: 40px;   /* 🔥 MOVED DOWN */
+  right: 12px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: url("https://i.pravatar.cc/100");
+  background-size: cover;
+  border: 2px solid white;
+  animation: spin 3s linear infinite;
+  z-index: 2; /* 🔥 BELOW BUTTONS */
 }
 
-@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
-
-.skeleton {
-  position:absolute;
-  width:100%; height:100%;
-  background:linear-gradient(90deg,#111,#333,#111);
-  animation:shimmer 1.5s infinite;
+/* ROTATION */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-@keyframes shimmer {
-  0%{opacity:0.3}
-  50%{opacity:0.6}
-  100%{opacity:0.3}
+/* ================= PROGRESS ================= */
+.progress {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(255,255,255,0.2);
 }
 
-.dark { background:black; color:white; }
-.light { background:white; color:black; }
-.themeToggle { position:fixed; top:10px; left:10px; z-index:1000; }
+.progress div {
+  height: 100%;
+  background: linear-gradient(90deg, #ff0050, #ff7a00);
+}
+
+/* ================= THEME BUTTON ================= */
+.themeToggle {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1000;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  color: white;
+  backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.5);
+}
+@media (max-width: 768px) {
+  .rightBar {
+    right: 8px;
+    gap: 14px;
+  }
+
+  .iconBtn svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .bottom {
+    font-size: 13px;
+  }
+}

@@ -5,9 +5,11 @@ import VideoCard from "./VideoCard";
 export default function VideoFeed() {
   const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef(null);
-  const isManualScroll = useRef(false); // 🔥 FIX FLAG
 
-  // ✅ Keyboard navigation (UP / DOWN)
+  const isManualScroll = useRef(false);
+  const scrollTimeout = useRef(null);
+
+  // 🔥 Keyboard navigation
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === "ArrowDown") {
@@ -19,13 +21,21 @@ export default function VideoFeed() {
         isManualScroll.current = true;
         setActiveIndex((prev) => (prev - 1 + videos.length) % videos.length);
       }
+
+      if (e.key === " ") {
+        e.preventDefault();
+        const video = document.querySelector(".active video");
+        if (video) {
+          video.paused ? video.play() : video.pause();
+        }
+      }
     };
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  // ✅ Scroll to active video smoothly
+  // 🔥 Smooth scroll to active video
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -35,22 +45,25 @@ export default function VideoFeed() {
       child.scrollIntoView({ behavior: "smooth" });
     }
 
-    // 🔥 Reset manual flag after scroll completes
-    const timer = setTimeout(() => {
+    // reset flag AFTER scroll finishes
+    clearTimeout(scrollTimeout.current);
+    scrollTimeout.current = setTimeout(() => {
       isManualScroll.current = false;
-    }, 500);
+    }, 600);
 
-    return () => clearTimeout(timer);
   }, [activeIndex]);
 
-  // ✅ Detect visible video (auto play sync)
+  // 🔥 Observer (ONLY when not manual)
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          // 🔥 IMPORTANT FIX
-          if (entry.isIntersecting && !isManualScroll.current) {
-            setActiveIndex(Number(entry.target.dataset.index));
+          if (
+            entry.isIntersecting &&
+            !isManualScroll.current
+          ) {
+            const index = Number(entry.target.dataset.index);
+            setActiveIndex(index);
           }
         });
       },
@@ -66,7 +79,11 @@ export default function VideoFeed() {
   return (
     <div className="feed" ref={containerRef}>
       {videos.map((video, index) => (
-        <div key={video.id} data-index={index} className="wrapper">
+        <div
+          key={video.id}
+          data-index={index}
+          className={`wrapper ${index === activeIndex ? "active" : ""}`}
+        >
           <VideoCard video={video} active={index === activeIndex} />
         </div>
       ))}

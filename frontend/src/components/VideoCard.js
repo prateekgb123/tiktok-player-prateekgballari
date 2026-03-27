@@ -1,24 +1,31 @@
 import { useEffect, useRef, useState } from "react";
+import {
+  Heart,
+  MessageCircle,
+  Share2,
+  Bookmark,
+  Volume2,
+  VolumeX
+} from "lucide-react";
 
 export default function VideoCard({ video, active }) {
-  const ref = useRef(null);
+  const ref = useRef();
   const [play, setPlay] = useState(false);
   const [mute, setMute] = useState(true);
-  const [likes, setLikes] = useState(video.likes);
   const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState(video.likes);
   const [showHeart, setShowHeart] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [follow, setFollow] = useState(false);
 
+  // ✅ Auto play / pause
   useEffect(() => {
     if (!ref.current) return;
 
     if (active) {
-      const playPromise = ref.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {});
-      }
+      ref.current.play().catch(() => {});
       setPlay(true);
     } else {
       ref.current.pause();
@@ -26,8 +33,8 @@ export default function VideoCard({ video, active }) {
     }
   }, [active]);
 
-  const togglePlay = (e) => {
-    e.stopPropagation();
+  // ✅ Play toggle
+  const togglePlay = () => {
     if (!ref.current) return;
 
     if (play) {
@@ -39,15 +46,18 @@ export default function VideoCard({ video, active }) {
     setPlay(!play);
   };
 
+  // ✅ Double tap like
   const handleDoubleTap = () => {
     if (!liked) {
       setLiked(true);
       setLikes((l) => l + 1);
     }
+
     setShowHeart(true);
-    setTimeout(() => setShowHeart(false), 800);
+    setTimeout(() => setShowHeart(false), 700);
   };
 
+  // ✅ Progress
   const handleTime = () => {
     const v = ref.current;
     if (v?.duration) {
@@ -55,80 +65,114 @@ export default function VideoCard({ video, active }) {
     }
   };
 
-  let pressTimer;
+  // ✅ Like button
+  const handleLike = (e) => {
+    e.stopPropagation();
 
-  const handlePressStart = () => {
-    pressTimer = setTimeout(() => {
-      ref.current.pause();
-    }, 200);
-  };
-
-  const handlePressEnd = () => {
-    clearTimeout(pressTimer);
-    ref.current.play().catch(() => {});
+    setLiked(!liked);
+    setLikes((prev) => (liked ? prev - 1 : prev + 1));
   };
 
   return (
     <div
-      className="card"
-      onClick={togglePlay}
-      onDoubleClick={handleDoubleTap}
-      onMouseDown={handlePressStart}
-      onMouseUp={handlePressEnd}
-    >
-      {loading && <div className="skeleton" />}
+  className="card"
+  onClick={togglePlay}
+  onDoubleClick={handleDoubleTap}
 
-      <video
-        ref={ref}
-        src={video.url}
-        muted={mute}
-        loop
-        playsInline
-        preload="auto"
-        onLoadedData={() => setLoading(false)}
-        onTimeUpdate={handleTime}
-      />
+  // ✅ ADD THESE 2 LINES
+  onMouseDown={() => ref.current?.pause()}
+  onMouseUp={() => ref.current?.play()}
+  onTouchStart={() => ref.current?.pause()}
+onTouchEnd={() => ref.current?.play()}
+>
+  
+      {/* VIDEO */}
+     <video
+  ref={ref}
+  src={video.url}
+  muted={mute}
+  loop
+  playsInline
+  preload="auto"
+  onTimeUpdate={handleTime}
+  onLoadedData={() => setLoading(false)}
+/>
+{loading && <div className="loader" />}
 
-      {showHeart && <div className="bigHeart">❤️</div>}
+      {/* ❤️ DOUBLE TAP HEART */}
+      {showHeart && <div className="heartAnim">❤️</div>}
 
-      <div className="rightBar">
-        <img src={video.user.avatar} />
-        <button onClick={() => setFollow(!follow)}>
+      {/* RIGHT ACTION BAR */}
+      <div className="rightBar" onClick={(e) => e.stopPropagation()}>
+        <img src={video.user.avatar} alt="avatar" />
+
+        <button
+          className="followBtn"
+          onClick={() => setFollow(!follow)}
+        >
           {follow ? "Following" : "Follow"}
         </button>
 
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setLiked(!liked);
-            setLikes(liked ? likes - 1 : likes + 1);
-          }}
-        >
-          ❤️ {likes}
+        <button className="iconBtn" onClick={handleLike}>
+          <Heart
+            size={28}
+            fill={liked ? "red" : "none"}
+            color={liked ? "red" : "white"}
+          />
+          <span>{likes}</span>
         </button>
 
-        <button>💬 {video.comments}</button>
-        <button>🔗 {video.shares}</button>
-        <button>🔖</button>
+        <button className="iconBtn">
+          <MessageCircle size={28} />
+          <span>{video.comments}</span>
+        </button>
+
+        <button className="iconBtn">
+          <Share2 size={28} />
+        </button>
+
+        <button className="iconBtn">
+          <Bookmark size={28} />
+        </button>
       </div>
 
+      {/* BOTTOM INFO */}
       <div className="bottom">
         <p>@{video.user.name}</p>
-        <p>{video.description}</p>
+
+        <p>
+          {expanded
+            ? video.description
+            : video.description.slice(0, 40)}
+
+          {video.description.length > 40 && (
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpanded(!expanded);
+              }}
+            >
+              {expanded ? " less" : "...more"}
+            </span>
+          )}
+        </p>
       </div>
 
+      {/* 🔊 SOUND */}
       <button
-        className="mute"
+        className="muteBtn"
         onClick={(e) => {
           e.stopPropagation();
           setMute(!mute);
         }}
       >
-        {mute ? "🔇" : "🔊"}
+        {mute ? <VolumeX size={22} /> : <Volume2 size={22} />}
       </button>
 
+      {/* 🎵 DISC */}
       <div className="disc" />
 
+      {/* 📊 PROGRESS */}
       <div className="progress">
         <div style={{ width: progress + "%" }} />
       </div>
