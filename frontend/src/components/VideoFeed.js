@@ -62,14 +62,14 @@ export default function VideoFeed() {
   // 🔥 keyboard navigation (loop safe)
   useEffect(() => {
     const handleKey = (e) => {
-      if (e.key === "ArrowDown") {
-        setActiveIndex((prev) => prev + 1);
-      }
+  if (e.key === "ArrowUp") {
+    setActiveIndex((prev) => prev + 1); // 🔥 next
+  }
 
-      if (e.key === "ArrowUp") {
-        setActiveIndex((prev) => prev - 1);
-      }
-    };
+  if (e.key === "ArrowDown") {
+    setActiveIndex((prev) => prev - 1); // 🔥 previous
+  }
+};
 
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);

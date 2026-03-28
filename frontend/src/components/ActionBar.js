@@ -1,42 +1,48 @@
 import { useState } from "react";
-import {
-  Heart,
-  MessageCircle,
-  Share2,
-  Bookmark
-} from "lucide-react";
+import { Heart, MessageCircle, Share2, Bookmark } from "lucide-react";
 
 export default function ActionBar({
   video,
   liked,
   likes,
   onLike,
-  onCommentClick
+  onCommentClick,
+  commentCount,
+  setActionClick
 }) {
   const [saved, setSaved] = useState(false);
   const [follow, setFollow] = useState(false);
 
-  const [comments] = useState([
-    "Nice video 🔥",
-    "Amazing content 😍"
-  ]);
+  const handleAction = (cb) => (e) => {
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
+    setActionClick(true);
+    cb && cb();
+  };
 
   return (
-    <div className="rightBar" onClick={(e) => e.stopPropagation()}>
-      
+    <div className="rightBar">
       {/* Avatar */}
       <img src={video?.user?.avatar} alt="avatar" />
 
       {/* Follow */}
       <button
         className="followBtn"
-        onClick={() => setFollow(!follow)}
+        onClick={handleAction(() => setFollow(!follow))}
       >
         {follow ? "Following" : "Follow"}
       </button>
 
-      {/* Like */}
-      <button className="iconBtn" onClick={onLike}>
+      {/* ✅ Like — always rendered, no condition */}
+      <button
+        className="iconBtn"
+        onClick={(e) => {
+          e.stopPropagation();
+          e.nativeEvent.stopImmediatePropagation();
+          setActionClick(true);
+          onLike();
+        }}
+      >
         <Heart
           size={28}
           color={liked ? "red" : "white"}
@@ -48,20 +54,16 @@ export default function ActionBar({
       {/* Comment */}
       <button
         className="iconBtn"
-        onClick={(e) => {
-          e.stopPropagation();
-          onCommentClick();
-        }}
+        onClick={handleAction(onCommentClick)}
       >
         <MessageCircle size={28} color="white" />
-        <span>{comments.length}</span>
+        <span>{commentCount}</span>
       </button>
 
       {/* Share */}
       <button
         className="iconBtn"
-        onClick={(e) => {
-          e.stopPropagation();
+        onClick={handleAction(() => {
           if (navigator.share) {
             navigator.share({
               title: "Check this video",
@@ -72,7 +74,7 @@ export default function ActionBar({
             navigator.clipboard.writeText(video.url);
             alert("Link copied!");
           }
-        }}
+        })}
       >
         <Share2 size={28} color="white" />
       </button>
@@ -80,10 +82,7 @@ export default function ActionBar({
       {/* Save */}
       <button
         className="iconBtn"
-        onClick={(e) => {
-          e.stopPropagation();
-          setSaved(!saved);
-        }}
+        onClick={handleAction(() => setSaved(!saved))}
       >
         <Bookmark
           size={28}
@@ -93,7 +92,7 @@ export default function ActionBar({
         <span>{saved ? "Saved" : "Save"}</span>
       </button>
 
-      {/* 🎵 Rotating Disc */}
+      {/* Disc */}
       <div className="disc">
         <img src={video?.user?.avatar} alt="music" />
       </div>
