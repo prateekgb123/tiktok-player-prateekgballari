@@ -9,7 +9,6 @@ export default function VideoCard({ video, active }) {
   const lastTapRef = useRef(0);
   const isActionClick = useRef(false);
 
-  // 🔥 NEW
   const isLongPress = useRef(false);
   const pressTimer = useRef(null);
 
@@ -30,7 +29,7 @@ export default function VideoCard({ video, active }) {
     { user: "user", text: "Amazing 😍" }
   ]);
 
-  // autoplay
+  // ✅ AUTOPLAY
   useEffect(() => {
     if (!ref.current) return;
     if (active) {
@@ -40,6 +39,32 @@ export default function VideoCard({ video, active }) {
       ref.current.pause();
       setPlay(false);
     }
+  }, [active]);
+
+  // ✅ SPACEBAR FIX (🔥 IMPORTANT)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.code === "Space" && active) {
+        e.preventDefault(); // 🚫 stop scroll
+
+        if (!ref.current) return;
+
+        if (ref.current.paused) {
+          ref.current.play().catch(() => {});
+          setPlay(true);
+        } else {
+          ref.current.pause();
+          setPlay(false);
+        }
+
+        // show overlay icon
+        setShowPlayIcon(true);
+        setTimeout(() => setShowPlayIcon(false), 1000);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [active]);
 
   // play/pause
@@ -70,7 +95,7 @@ export default function VideoCard({ video, active }) {
     });
   };
 
-  // 🔥 LONG PRESS
+  // LONG PRESS
   const handlePointerDown = () => {
     if (isActionClick.current) return;
 
@@ -101,7 +126,7 @@ export default function VideoCard({ video, active }) {
     clearTimeout(pressTimer.current);
   };
 
-  // 🔥 TAP HANDLER (FIXED)
+  // TAP HANDLER
   const handleTap = () => {
     if (isActionClick.current) {
       setTimeout(() => (isActionClick.current = false), 100);
@@ -139,10 +164,12 @@ export default function VideoCard({ video, active }) {
     if (!text.trim()) return;
     setComments((prev) => [...prev, { user: "user", text }]);
   };
-   const getShortText = (text) => {
-  const words = text.split(" ");
-  return words.slice(0, 2).join(" ");
-};
+
+  const getShortText = (text) => {
+    const words = text.split(" ");
+    return words.slice(0, 2).join(" ");
+  };
+
   return (
     <div
       className="card"
@@ -185,26 +212,24 @@ export default function VideoCard({ video, active }) {
       />
 
       <div className="bottom">
-  <p className="username">@{video.user.name}</p>
+        <p className="username">@{video.user.name}</p>
 
+        <p className="description">
+          {expanded ? video.description : getShortText(video.description)}
 
-
-<p className="description">
-  {expanded ? video.description : getShortText(video.description)}
-
-  {video.description.split(" ").length > 2 && (
-    <span
-      className="moreBtn"
-      onClick={(e) => {
-        e.stopPropagation();
-        setExpanded(!expanded);
-      }}
-    >
-      {expanded ? " less" : " ...more"}
-    </span>
-  )}
-</p>
-</div>
+          {video.description.split(" ").length > 2 && (
+            <span
+              className="moreBtn"
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpanded(!expanded);
+              }}
+            >
+              {expanded ? " less" : " ...more"}
+            </span>
+          )}
+        </p>
+      </div>
 
       <button
         className="muteBtn"

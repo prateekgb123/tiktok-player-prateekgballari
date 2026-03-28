@@ -11,7 +11,7 @@ This project replicates the core short-form video experience with smooth scrolli
 
 ## 🎥 Video Demo
 
-👉 *(Paste your Loom / YouTube / Drive link here)*
+👉 https://drive.google.com/file/d/1UA7jXdFDd5tW1a6MRzfcb81BeXIeaEAD/view?usp=drive_link
 
 ---
 
