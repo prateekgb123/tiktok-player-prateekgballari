@@ -9,6 +9,10 @@ export default function VideoCard({ video, active }) {
   const lastTapRef = useRef(0);
   const isActionClick = useRef(false);
 
+  // 🔥 NEW
+  const isLongPress = useRef(false);
+  const pressTimer = useRef(null);
+
   const [play, setPlay] = useState(false);
   const [mute, setMute] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -44,6 +48,7 @@ export default function VideoCard({ video, active }) {
     if (play) ref.current.pause();
     else ref.current.play().catch(() => {});
     setPlay(!play);
+
     setShowPlayIcon(true);
     setTimeout(() => setShowPlayIcon(false), 1000);
   };
@@ -56,7 +61,7 @@ export default function VideoCard({ video, active }) {
     }
   };
 
-  // ✅ This is ONLY for the ActionBar like button
+  // like button ONLY
   const handleLike = () => {
     setLiked((prev) => {
       const newLiked = !prev;
@@ -65,12 +70,45 @@ export default function VideoCard({ video, active }) {
     });
   };
 
-  // ✅ FIXED TAP HANDLER — double-tap manages its own state, never calls handleLike()
+  // 🔥 LONG PRESS
+  const handlePointerDown = () => {
+    if (isActionClick.current) return;
+
+    isLongPress.current = false;
+
+    pressTimer.current = setTimeout(() => {
+      isLongPress.current = true;
+
+      if (ref.current) {
+        ref.current.pause();
+        setPlay(false);
+      }
+    }, 250);
+  };
+
+  const handlePointerUp = () => {
+    clearTimeout(pressTimer.current);
+
+    if (isLongPress.current) {
+      if (ref.current) {
+        ref.current.play().catch(() => {});
+        setPlay(true);
+      }
+    }
+  };
+
+  const handlePointerLeave = () => {
+    clearTimeout(pressTimer.current);
+  };
+
+  // 🔥 TAP HANDLER (FIXED)
   const handleTap = () => {
     if (isActionClick.current) {
-      isActionClick.current = false;
+      setTimeout(() => (isActionClick.current = false), 100);
       return;
     }
+
+    if (isLongPress.current) return;
 
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 300;
@@ -78,17 +116,17 @@ export default function VideoCard({ video, active }) {
     if (lastTapRef.current && now - lastTapRef.current < DOUBLE_TAP_DELAY) {
       lastTapRef.current = 0;
 
-      // ✅ Directly mutate state — does NOT call handleLike()
-      // This prevents double-firing when ActionBar like button is also hit
       setShowHeart(true);
-      setLiked((prev) => {
-        if (!prev) setLikes((c) => c + 1); // only +1 if not already liked
-        return true; // double-tap always sets liked = true
-      });
-      setTimeout(() => setShowHeart(false), 600);
 
+      if (!liked) {
+        setLiked(true);
+        setLikes((c) => c + 1);
+      }
+
+      setTimeout(() => setShowHeart(false), 600);
     } else {
       lastTapRef.current = now;
+
       setTimeout(() => {
         if (lastTapRef.current === now) {
           togglePlay();
@@ -103,8 +141,13 @@ export default function VideoCard({ video, active }) {
   };
 
   return (
-    <div className="card" onClick={handleTap}>
-      {/* VIDEO */}
+    <div
+      className="card"
+      onClick={handleTap}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handlePointerLeave}
+    >
       <video
         ref={ref}
         src={video.url}
@@ -119,20 +162,15 @@ export default function VideoCard({ video, active }) {
         }}
       />
 
-      {/* PLAY ICON */}
       {showPlayIcon && (
         <div className="playPauseIcon">
           {play ? <Pause size={80} /> : <Play size={80} />}
         </div>
       )}
 
-      {/* LOADER */}
       {loading && <div className="loader" />}
-
-      {/* HEART */}
       {showHeart && <div className="heartAnim">❤️</div>}
 
-      {/* ACTION BAR */}
       <ActionBar
         video={video}
         liked={liked}
@@ -143,7 +181,6 @@ export default function VideoCard({ video, active }) {
         setActionClick={(val) => (isActionClick.current = val)}
       />
 
-      {/* BOTTOM */}
       <div className="bottom">
         <p>@{video.user.name}</p>
         <p>
@@ -161,7 +198,6 @@ export default function VideoCard({ video, active }) {
         </p>
       </div>
 
-      {/* MUTE */}
       <button
         className="muteBtn"
         onClick={(e) => {
@@ -172,10 +208,8 @@ export default function VideoCard({ video, active }) {
         {mute ? <VolumeX size={22} /> : <Volume2 size={22} />}
       </button>
 
-      {/* PROGRESS */}
       <ProgressBar progress={progress} />
 
-      {/* COMMENTS */}
       {showComments && (
         <CommentModal
           comments={comments}
