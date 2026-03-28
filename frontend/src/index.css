@@ -457,6 +457,35 @@ video {
     opacity: 0;
   }
 }
+/* Bottom container */
+.bottom {
+  position: absolute;
+  bottom: 70px;
+  left: 15px;
+  right: 90px;
+  color: white;
+  font-size: 14px;
+}
+
+/* Username */
+.username {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+/* Description */
+
+/* Expanded state */
+.description {
+  color: white;
+  font-size: 14px;
+}
+
+.moreBtn {
+  font-weight: 600;
+  margin-left: 5px;
+  cursor: pointer;
+}
 
 /* ================= RESPONSIVE (MOBILE) ================= */
 @media (max-width: 768px) {

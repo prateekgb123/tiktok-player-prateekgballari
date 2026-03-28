@@ -139,7 +139,10 @@ export default function VideoCard({ video, active }) {
     if (!text.trim()) return;
     setComments((prev) => [...prev, { user: "user", text }]);
   };
-
+   const getShortText = (text) => {
+  const words = text.split(" ");
+  return words.slice(0, 2).join(" ");
+};
   return (
     <div
       className="card"
@@ -182,21 +185,26 @@ export default function VideoCard({ video, active }) {
       />
 
       <div className="bottom">
-        <p>@{video.user.name}</p>
-        <p>
-          {expanded ? video.description : video.description.slice(0, 40)}
-          {video.description.length > 40 && (
-            <span
-              onClick={(e) => {
-                e.stopPropagation();
-                setExpanded(!expanded);
-              }}
-            >
-              {expanded ? " less" : "...more"}
-            </span>
-          )}
-        </p>
-      </div>
+  <p className="username">@{video.user.name}</p>
+
+
+
+<p className="description">
+  {expanded ? video.description : getShortText(video.description)}
+
+  {video.description.split(" ").length > 2 && (
+    <span
+      className="moreBtn"
+      onClick={(e) => {
+        e.stopPropagation();
+        setExpanded(!expanded);
+      }}
+    >
+      {expanded ? " less" : " ...more"}
+    </span>
+  )}
+</p>
+</div>
 
       <button
         className="muteBtn"
