@@ -1,32 +1,26 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  Heart,
-  MessageCircle,
-  Share2,
-  Bookmark,
-  Volume2,
-  VolumeX
-} from "lucide-react";
+import { useRef, useEffect, useState } from "react";
+import ActionBar from "./ActionBar";
+import ProgressBar from "./ProgressBar";
+import CommentModal from "./CommentModal";
+import { Volume2, VolumeX } from "lucide-react";
 
 export default function VideoCard({ video, active }) {
   const ref = useRef();
+  const lastTapRef = useRef(0);
+
   const [play, setPlay] = useState(false);
   const [mute, setMute] = useState(true);
-  const [liked, setLiked] = useState(false);
-  const [likes, setLikes] = useState(video.likes);
-  const [showHeart, setShowHeart] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [showComments, setShowComments] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [follow, setFollow] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [showComments, setShowComments] = useState(false);
-const [commentText, setCommentText] = useState("");
-const [comments, setComments] = useState([
-  "Nice video 🔥",
-  "Amazing content 😍"
-]);
-  // ✅ Auto play / pause
+  const [showHeart, setShowHeart] = useState(false);
+
+  // 🔥 LIKE STATE (moved here)
+  const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState(video?.likes || 120);
+
+  // autoplay
   useEffect(() => {
     if (!ref.current) return;
 
@@ -39,31 +33,16 @@ const [comments, setComments] = useState([
     }
   }, [active]);
 
-  // ✅ Play toggle
+  // play/pause
   const togglePlay = () => {
     if (!ref.current) return;
 
-    if (play) {
-      ref.current.pause();
-    } else {
-      ref.current.play().catch(() => {});
-    }
-
+    if (play) ref.current.pause();
+    else ref.current.play().catch(() => {});
     setPlay(!play);
   };
 
-  // ✅ Double tap like
-  const handleDoubleTap = () => {
-    if (!liked) {
-      setLiked(true);
-      setLikes((l) => l + 1);
-    }
-
-    setShowHeart(true);
-    setTimeout(() => setShowHeart(false), 700);
-  };
-
-  // ✅ Progress
+  // progress
   const handleTime = () => {
     const v = ref.current;
     if (v?.duration) {
@@ -71,148 +50,66 @@ const [comments, setComments] = useState([
     }
   };
 
-  // ✅ Like button
-  const handleLike = (e) => {
-    e.stopPropagation();
+  // 🔥 LIKE HANDLER
+  const handleLike = () => {
+    setLiked((prev) => {
+      const newLiked = !prev;
+      setLikes((count) => (newLiked ? count + 1 : count - 1));
+      return newLiked;
+    });
+  };
 
-    setLiked(!liked);
-    setLikes((prev) => (liked ? prev - 1 : prev + 1));
+  // 🔥 DOUBLE TAP LOGIC
+  const handleTap = () => {
+    const now = Date.now();
+
+    if (now - lastTapRef.current < 300) {
+      // ❤️ DOUBLE TAP
+      setShowHeart(true);
+
+      // only LIKE (not unlike)
+      if (!liked) {
+        setLiked(true);
+        setLikes((count) => count + 1);
+      }
+
+      setTimeout(() => setShowHeart(false), 600);
+    } else {
+      togglePlay();
+    }
+
+    lastTapRef.current = now;
   };
 
   return (
-    <div
-  className="card"
-  onClick={togglePlay}
-  onDoubleClick={handleDoubleTap}
-
-  // ✅ ADD THESE 2 LINES
-  onMouseDown={() => ref.current?.pause()}
-  onMouseUp={() => ref.current?.play()}
-  onTouchStart={() => ref.current?.pause()}
-onTouchEnd={() => ref.current?.play()}
->
-
-  {showComments && (
-  <div className="commentModal" onClick={() => setShowComments(false)}>
-    <div className="commentBox" onClick={(e) => e.stopPropagation()}>
+    <div className="card" onClick={handleTap}>
       
-      <h3>Comments</h3>
-
-      <div className="commentList">
-  {comments.map((c, i) => (
-    <div key={i} className="commentItem">
-      <img src={`https://i.pravatar.cc/40?img=${i}`} />
-      <div className="commentContent">
-        <div className="commentUser">@user{i}</div>
-        <div>{c}</div>
-      </div>
-    </div>
-  ))}
-</div>
-
-      <div className="commentInput">
-        <input
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-          placeholder="Add comment..."
-        />
-        <button
-          onClick={() => {
-            if (!commentText.trim()) return;
-            setComments([...comments, commentText]);
-            setCommentText("");
-          }}
-        >
-          Post
-        </button>
-      </div>
-
-    </div>
-  </div>
-)}
-  
       {/* VIDEO */}
-     <video
-  ref={ref}
-  src={video.url}
-  muted={mute}
-  loop
-  playsInline
-  preload="auto"
-  onTimeUpdate={handleTime}
-  onLoadedData={() => setLoading(false)}
-/>
-{loading && <div className="loader" />}
+      <video
+        ref={ref}
+        src={video.url}
+        muted={mute}
+        loop
+        playsInline
+        preload="auto"
+        onTimeUpdate={handleTime}
+        onLoadedData={() => setLoading(false)}
+      />
 
-      {/* ❤️ DOUBLE TAP HEART */}
+      {/* LOADER */}
+      {loading && <div className="loader" />}
+
+      {/* ❤️ HEART ANIMATION */}
       {showHeart && <div className="heartAnim">❤️</div>}
 
-      {/* RIGHT ACTION BAR */}
-      <div className="rightBar" onClick={(e) => e.stopPropagation()}>
-        <img src={video.user.avatar} alt="avatar" />
-
-        <button
-          className="followBtn"
-          onClick={() => setFollow(!follow)}
-        >
-          {follow ? "Following" : "Follow"}
-        </button>
-
-        <button className="iconBtn" onClick={handleLike}>
-          <Heart
-  size={28}
-  color={liked ? "red" : "currentColor"}   // 🔥 stroke color
-  fill={liked ? "red" : "none"}           // 🔥 fill inside
-/>
-          <span>{likes}</span>
-        </button>
-
-        <button
-  className="iconBtn"
-  onClick={(e) => {
-    e.stopPropagation();
-    setShowComments(true);
-  }}
->
-  <MessageCircle size={28} />
-  <span>{comments.length}</span>
-</button>
-
-        <button
-  className="iconBtn"
-  onClick={async (e) => {
-    e.stopPropagation();
-
-    if (navigator.share) {
-      await navigator.share({
-        title: "Check this video",
-        text: video.description,
-        url: video.url
-      });
-    } else {
-      navigator.clipboard.writeText(video.url);
-      alert("Link copied!");
-    }
-  }}
->
-  <Share2 size={28} />
-</button>
-
-        <button
-  className="iconBtn"
-  onClick={(e) => {
-    e.stopPropagation();
-    setSaved(!saved);
-  }}
->
-  <Bookmark
-    size={28}
-    color={saved ? "#ffd700" : "currentColor"} // gold color
-    fill={saved ? "#ffd700" : "none"}
-  />
-  <span>{saved ? "Saved" : "Save"}</span>
-</button>
-      </div>
+      {/* RIGHT ACTIONS */}
+      <ActionBar
+        video={video}
+        liked={liked}
+        likes={likes}
+        onLike={handleLike}
+        onCommentClick={() => setShowComments(true)}
+      />
 
       {/* BOTTOM INFO */}
       <div className="bottom">
@@ -236,7 +133,7 @@ onTouchEnd={() => ref.current?.play()}
         </p>
       </div>
 
-      {/* 🔊 SOUND */}
+      {/* SOUND */}
       <button
         className="muteBtn"
         onClick={(e) => {
@@ -247,13 +144,13 @@ onTouchEnd={() => ref.current?.play()}
         {mute ? <VolumeX size={22} /> : <Volume2 size={22} />}
       </button>
 
-      {/* 🎵 DISC */}
-      <div className="disc" />
+      {/* PROGRESS */}
+      <ProgressBar progress={progress} />
 
-      {/* 📊 PROGRESS */}
-      <div className="progress">
-        <div style={{ width: progress + "%" }} />
-      </div>
+      {/* COMMENTS */}
+      {showComments && (
+        <CommentModal onClose={() => setShowComments(false)} />
+      )}
     </div>
   );
 }
